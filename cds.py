@@ -3,6 +3,7 @@
 
 import re
 import sys
+import urllib.request
 
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
@@ -27,21 +28,25 @@ def main(vocaFileName,outputFileName,defSize):
 
     for voca in vocas :
         try :
-            camUrl = urlopen("/".join([CAMBRIDGE_URL, voca]))
+            
+            req = urllib.request.Request("/".join([CAMBRIDGE_URL, voca]), headers={'User-Agent': 'Mozilla/5.0'})
+            camUrl = urlopen(req)
             soup = BeautifulSoup(camUrl, 'html.parser')
             defines = soup.findAll('div',class_='ddef_h')
         
+            outFile.write(voca)
+            
+            print(voca)
 
-            outFile.write(voca+"=")
-
+            outFile.write("==")
             i = 0
             while  i<int(defSize) :
                 try : 
-                    outFile.write(defines[i].text)
+                    outFile.write(defines[i].text+"\n")
                     i += 1
                 except :
                     break
-            outFile.write("\n\n")
+            outFile.write("@")
         except :
             break
     vocaFile.close()
