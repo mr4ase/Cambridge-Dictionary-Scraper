@@ -20,29 +20,33 @@ def main(vocaFileName,outputFileName,defSize):
     try :
         vocaFile = open(vocaFileName,'r')
         outFile = open(outputFileName,'w')
-
+        # vocas = [line.rstrip('\n') for line in outFile]
         vocas =vocaFile.readlines()
+        # print(vocas)
     except :
         print("check your file name")
         exit()
 
     for voca in vocas :
         try :
-            
+            voca = voca.rstrip()
+            if len(voca.split())>1:
+                voca = voca.replace(" ","-")
             req = urllib.request.Request("/".join([CAMBRIDGE_URL, voca]), headers={'User-Agent': 'Mozilla/5.0'})
             camUrl = urlopen(req)
             soup = BeautifulSoup(camUrl, 'html.parser')
-            defines = soup.findAll('div',class_='ddef_h')
-        
-            outFile.write(voca)
+            defines = soup.findAll('div', class_='ddef_h')
+            examples = soup.findAll('div', class_='def-body ddef_b' )
+            # examples = soup.findAll('div', class_='examp dexamp' )
+            outFile.write(voca+'\n')
             
-            print(voca)
-
-            outFile.write("==")
             i = 0
             while  i<int(defSize) :
                 try : 
+                    outFile.write(f"=======Definition {i+1}:=======\n")
                     outFile.write(defines[i].text+"\n")
+                    outFile.write(f"=======Examples of using {voca}:=======\n")
+                    outFile.write(examples[i].text+"\n\n\n")
                     i += 1
                 except :
                     break
