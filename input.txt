@@ -1,2 +1,3 @@
-run out
-call off
+vivid
+trait
+reluctant

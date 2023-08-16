@@ -35,22 +35,38 @@ def main(vocaFileName,outputFileName,defSize):
             req = urllib.request.Request("/".join([CAMBRIDGE_URL, voca]), headers={'User-Agent': 'Mozilla/5.0'})
             camUrl = urlopen(req)
             soup = BeautifulSoup(camUrl, 'html.parser')
+
             defines = soup.findAll('div', class_='ddef_h')
             examples = soup.findAll('div', class_='def-body ddef_b' )
-            # examples = soup.findAll('div', class_='examp dexamp' )
+
+            examples_d = []
+            for div in examples:
+                inner_div = div.find('div', class_='had daccord_b')
+                inner_header = div.find('header', class_='ca_h')
+                if inner_div:
+                    # print(inner_div)
+                    inner_div.extract()
+                if inner_header:
+                    # print(inner_header)
+                    inner_header.extract()
+                examples_d.append(div.text.strip())
+
+
             outFile.write(voca+'\n')
+
+            print(examples_d)
             
             i = 0
-            while  i<int(defSize) :
+            while  i<=int(defSize) :
                 try : 
-                    outFile.write(f"=======Definition {i+1}:=======\n")
+                    outFile.write(f"=======Definition {i  }:=======\n")
                     outFile.write(defines[i].text+"\n")
                     outFile.write(f"=======Examples of using {voca}:=======\n")
                     outFile.write(examples[i].text+"\n\n\n")
                     i += 1
                 except :
                     break
-            outFile.write("@")
+            outFile.write("\n\n")
         except :
             break
     vocaFile.close()
